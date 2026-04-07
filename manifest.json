@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Web Monetization Monitor",
+  "version": "0.1",
+  "description": "Logs web monetization session start/stop events to the service worker console.",
+  "permissions": [
+    "monetization"
+  ],
+  "action": {
+    "default_title": "Web Monetization Monitor"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
