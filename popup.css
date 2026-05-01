@@ -1,0 +1,106 @@
+/* popup.css — styles for the Web Monetization Monitor popup. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  font-size: 13px;
+  width: 300px;
+  color: #1a1a1a;
+  background: #fff;
+}
+
+header {
+  background: #1a1a2e;
+  color: #fff;
+  padding: 10px 14px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+}
+
+section {
+  padding: 10px 14px;
+  border-bottom: 1px solid #eee;
+}
+
+h2 {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.label {
+  color: #555;
+}
+
+.value {
+  font-weight: 500;
+  color: #111;
+  word-break: break-all;
+  text-align: right;
+  max-width: 60%;
+}
+
+.value.highlight {
+  color: #2ecc71;
+  font-weight: 700;
+}
+
+.warning {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 12px;
+  color: #856404;
+  margin-top: 6px;
+}
+
+.muted {
+  color: #888;
+  font-style: italic;
+}
+
+#payments-list {
+  list-style: none;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+#payments-list li {
+  padding: 5px 0;
+  border-bottom: 1px solid #f0f0f0;
+  line-height: 1.4;
+}
+
+#payments-list li:last-child {
+  border-bottom: none;
+}
+
+.payment-time {
+  color: #888;
+  font-size: 11px;
+  margin-right: 4px;
+}
+
+.payment-wallet {
+  word-break: break-all;
+  display: block;
+}

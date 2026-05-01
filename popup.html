@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Web Monetization Monitor</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header>Web Monetization Monitor</header>
+
+  <section id="wallet-section">
+    <h2>Wallet</h2>
+    <div id="wallet-content"><span class="muted">Loading…</span></div>
+  </section>
+
+  <section id="balance-section">
+    <h2>Balance</h2>
+    <div id="balance-content"><span class="muted">Loading…</span></div>
+  </section>
+
+  <section>
+    <h2>Payments (this session)</h2>
+    <ul id="payments-list">
+      <li class="muted" id="no-payments">No payments yet.</li>
+    </ul>
+  </section>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,13 +1,33 @@
 // Web Monetization Monitor — service worker background script.
 //
-// Listens for chrome.monetization session lifecycle events and logs
-// them to the service-worker console (visible in chrome://extensions →
-// "Inspect views: Service Worker").
-//
-// Also shows a color-cycling "$" badge on the toolbar icon while
-// monetization is active on a tab.
+// Responsibilities:
+//   1. Listen for chrome.monetization session lifecycle events and log them
+//      to the service-worker console (visible in chrome://extensions →
+//      "Inspect views: Service Worker").
+//   2. Show a color-cycling "$" badge on the toolbar icon while monetization
+//      is active on a tab.
+//   3. Broadcast onPayment events (with refreshed balance) to the popup so it
+//      can update its UI in real time.
 
-// Color palette for the cycling badge background.
+if (!chrome.monetization) {
+  console.error(
+    "[WM] chrome.monetization is not available. " +
+      "Launch Chromium with --experimental-extension-apis, " +
+      "or use a local trunk build."
+  );
+  // Nothing else to do — the rest of this script registers monetization
+  // listeners that wouldn't work anyway.
+} else {
+  registerMonetizationListeners();
+  console.log(
+    "[WM] Web Monetization Monitor extension loaded — listening for session events."
+  );
+}
+
+// =============================================================================
+// Toolbar badge — animated "$" indicator while a tab is monetized.
+// =============================================================================
+
 const BADGE_COLORS = [
   "#2ecc71", // green
   "#1abc9c", // teal
@@ -48,42 +68,48 @@ function stopBadge(tabId) {
   chrome.action.setBadgeText({ tabId, text: "" });
 }
 
-function formatInfo(info) {
-  return JSON.stringify(
-    {
-      tabId: info.tabId,
-      frameId: info.frameId,
-      url: info.url,
-    },
-    null,
-    2
+// =============================================================================
+// Logging helper.
+// =============================================================================
+
+function logEvent(label, color, info) {
+  console.log(
+    `%c[WM] ${label}%c\n${JSON.stringify(info, null, 2)}`,
+    `color: ${color}; font-weight: bold`,
+    ""
   );
 }
 
-if (!chrome.monetization) {
-  console.error(
-    "[WM] chrome.monetization is not available. " +
-    "Launch Chromium with --experimental-extension-apis, " +
-    "or use a local trunk build."
-  );
-} else {
+// =============================================================================
+// Popup messaging — broadcast payment events to popup.js (if open).
+// =============================================================================
+
+async function broadcastPayment(session) {
+  const wallet = await chrome.monetization.getWallet();
+  // sendMessage rejects when no receiver (popup closed); ignore.
+  chrome.runtime
+    .sendMessage({ type: "payment", session, wallet })
+    .catch(() => {});
+}
+
+// =============================================================================
+// Monetization event registration.
+// =============================================================================
+
+function registerMonetizationListeners() {
   chrome.monetization.onStarted.addListener((info) => {
-    console.log(
-      `%c[WM] STARTED%c\n${formatInfo(info)}`,
-      "color: green; font-weight: bold",
-      ""
-    );
+    logEvent("STARTED", "green", info);
     startBadge(info.tabId);
   });
 
   chrome.monetization.onStopped.addListener((info) => {
-    console.log(
-      `%c[WM] STOPPED%c\n${formatInfo(info)}`,
-      "color: red; font-weight: bold",
-      ""
-    );
+    logEvent("STOPPED", "red", info);
     stopBadge(info.tabId);
   });
 
-  console.log("[WM] Web Monetization Monitor extension loaded — listening for session events.");
+  chrome.monetization.onPayment.addListener((session) => {
+    logEvent("PAYMENT", "#3498db", session);
+    broadcastPayment(session);
+  });
 }
+

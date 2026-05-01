@@ -4,14 +4,20 @@ A minimal Chrome extension that logs Web Monetization document lifecycle events 
 
 ## What It Does
 
-Listens for `chrome.monetization` events and logs:
+Listens for `chrome.monetization` events and logs them to the service-worker
+console:
 - 🟢 **STARTED** — when the first monetization session begins on a document
 - 🔴 **STOPPED** — when the last monetization session ends on a document
+- 🔵 **PAYMENT** — when a payment is sent for a monetization session
 
-Each event includes:
-- `tabId` — which tab the document is in
-- `frameId` — frame within the tab (`0` = main frame, non-zero = iframe)
-- `url` — the document URL
+While a tab is monetized, an animated color-cycling "$" badge is shown on
+the toolbar icon for that tab.
+
+Clicking the toolbar icon opens a popup that displays:
+- Connected wallet info (address, name, currency, budget)
+- Current balance (initial / remaining / renewal date)
+- A live log of payments received while the popup is open — the
+  "Remaining" balance updates in real time on each `onPayment` event.
 
 ## Requirements
 
@@ -72,8 +78,13 @@ a separate `STARTED`/`STOPPED` pair fires for that frame independently.
 
 ## Files
 
-- **manifest.json** — Extension metadata and permissions
-- **background.js** — Service worker that listens for events and logs them
+- **manifest.json** — Extension metadata, permissions, popup registration
+- **background.js** — Service worker: monetization listeners, badge animation,
+  payment broadcast to popup
+- **popup.html** — Popup markup (wallet / balance / payments sections)
+- **popup.css** — Popup styles
+- **popup.js** — Popup logic: fetches wallet & balance on open, listens for
+  payment messages from the service worker
 - **README.md** — This file
 
 ## Notes
